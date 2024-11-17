@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     if (!booking)
       return Response.json(null, {
         status: 404,
-        statusText: "Entity not found.",
+        statusText: "Booking not found.",
       });
     const bookingTotal = getOrderTotals({
       price: booking.property.price,
