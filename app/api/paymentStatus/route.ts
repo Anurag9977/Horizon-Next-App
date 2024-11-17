@@ -1,12 +1,14 @@
 import Stripe from "stripe";
 import { NextRequest } from "next/server";
 import db from "@/utils/db";
+import { redirect } from "next/navigation";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const sessionID = searchParams.get("session_id") as string;
+  if (!sessionID) return redirect("/");
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionID);
     const bookingID = session.metadata?.bookingID;

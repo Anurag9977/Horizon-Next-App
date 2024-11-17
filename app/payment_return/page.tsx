@@ -10,8 +10,6 @@ function PaymentReturnPage() {
   );
   const searchParams = useSearchParams();
   const sessionID = searchParams.get("session_id");
-  //No Session ID provided
-  if (!sessionID) return redirect("/");
 
   useEffect(() => {
     async function getPaymentStatus() {

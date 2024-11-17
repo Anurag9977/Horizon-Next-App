@@ -6,7 +6,7 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
 const stripePromise = loadStripe(
@@ -14,12 +14,8 @@ const stripePromise = loadStripe(
 );
 
 function CheckoutPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const bookingID = searchParams.get("bookingID");
-  if (!bookingID) {
-    return router.push("/");
-  }
 
   const fetchClientSecret = useCallback(async () => {
     const response = await axios.post("/api/payment", {

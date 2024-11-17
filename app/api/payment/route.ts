@@ -18,53 +18,53 @@ export async function POST(req: NextRequest) {
     return redirect("/");
   }
 
-  const booking = await db.booking.findUnique({
-    where: {
-      id: bookingID,
-      profileID: user.id,
-    },
-    select: {
-      totalNights: true,
-      checkIn: true,
-      checkOut: true,
-      property: {
-        select: {
-          name: true,
-          price: true,
-          propertyImage: true,
-        },
-      },
-    },
-  });
-
-  if (!booking)
-    return Response.json(null, {
-      status: 404,
-      statusText: "Entity not found.",
-    });
-  const bookingTotal = getOrderTotals({
-    price: booking.property.price,
-    numberOfNights: booking.totalNights,
-  });
-
-  const lineItems = [
-    {
-      quantity: 1,
-      price_data: {
-        currency: "inr",
-        product_data: {
-          name: booking.property.name,
-          description: `${booking.totalNights} nights (${formatDate(
-            booking.checkIn
-          )} - ${formatDate(booking.checkOut)})`,
-          images: [booking.property.propertyImage],
-        },
-        unit_amount: bookingTotal.orderTotal * 100,
-      },
-    },
-  ];
-
   try {
+    const booking = await db.booking.findUnique({
+      where: {
+        id: bookingID,
+        profileID: user.id,
+      },
+      select: {
+        totalNights: true,
+        checkIn: true,
+        checkOut: true,
+        property: {
+          select: {
+            name: true,
+            price: true,
+            propertyImage: true,
+          },
+        },
+      },
+    });
+
+    if (!booking)
+      return Response.json(null, {
+        status: 404,
+        statusText: "Entity not found.",
+      });
+    const bookingTotal = getOrderTotals({
+      price: booking.property.price,
+      numberOfNights: booking.totalNights,
+    });
+
+    const lineItems = [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "inr",
+          product_data: {
+            name: booking.property.name,
+            description: `${booking.totalNights} nights (${formatDate(
+              booking.checkIn
+            )} - ${formatDate(booking.checkOut)})`,
+            images: [booking.property.propertyImage],
+          },
+          unit_amount: bookingTotal.orderTotal * 100,
+        },
+      },
+    ];
+
     //Create checkout session from body params
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
